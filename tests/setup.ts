@@ -1,0 +1,9 @@
+Object.assign(process.env, {
+  DEFAULT_WALLET_ADDRESS:
+    process.env.DEFAULT_WALLET_ADDRESS ?? "0x1111111111111111111111111111111111111111",
+  APP_BASE_URL: process.env.APP_BASE_URL ?? "http://localhost:3000",
+  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS ?? "http://localhost:3000",
+  DEFAULT_NETWORK: process.env.DEFAULT_NETWORK ?? "ethereum",
+  DEFAULT_CRYPTO_CURRENCY: process.env.DEFAULT_CRYPTO_CURRENCY ?? "USDT",
+  DEFAULT_FIAT_CURRENCY: process.env.DEFAULT_FIAT_CURRENCY ?? "USD"
+});

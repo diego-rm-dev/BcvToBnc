@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum OnRampProvider {
+  TRANSAK
+}
+
+enum OrderStatus {
+  PENDING
+  WAITING_PAYMENT
+  PROCESSING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+enum FiatCurrency {
+  USD
+  EUR
+  COP
+}
+
+enum CryptoCurrency {
+  USDT
+}
+
+enum Network {
+  ETHEREUM
+  POLYGON
+  BSC
+}
+
+model Order {
+  id                 String         @id @default(cuid())
+  provider           OnRampProvider @default(TRANSAK)
+  partnerOrderId     String?
+  statusAccessToken  String?
+  customerEmail      String?
+  walletAddress      String
+  fiatAmount         Float
+  fiatCurrency       FiatCurrency   @default(USD)
+  cryptoCurrency     CryptoCurrency @default(USDT)
+  network            Network        @default(ETHEREUM)
+  quotedCryptoAmount Float?
+  quotedTotalFee     Float?
+  quoteRequestedAt   DateTime?
+  quoteInput         String?
+  quoteSummary       String?
+  status             OrderStatus    @default(PENDING)
+  redirectUrl        String?
+  rawSessionPayload  String?
+  rawWebhookPayload  String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@index([status, createdAt])
+  @@index([walletAddress, createdAt])
+  @@index([customerEmail])
+  @@index([provider, createdAt])
+  @@unique([provider, partnerOrderId])
+  @@unique([statusAccessToken])
+}
+
+model ProcessedWebhookEvent {
+  id             String         @id @default(cuid())
+  provider       OnRampProvider
+  eventId        String
+  partnerOrderId String?
+  orderId        String?
+  rawPayload     String
+  processedAt    DateTime       @default(now())
+
+  @@unique([provider, eventId])
+  @@index([provider, processedAt])
+  @@index([orderId])
+}
