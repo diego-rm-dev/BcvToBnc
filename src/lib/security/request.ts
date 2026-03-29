@@ -51,7 +51,16 @@ function normalizeOrigin(value: string | null | undefined): string | null {
   try {
     return new URL(trimmed).origin.toLowerCase();
   } catch {
-    return trimmed.replace(/\/+$/, "").toLowerCase();
+    const hostOnly = trimmed.replace(/\/+$/, "").toLowerCase();
+    // Acepta entradas en env como "staging.deviego.xyz" (sin esquema).
+    if (!/^https?:\/\//i.test(hostOnly)) {
+      try {
+        return new URL(`https://${hostOnly}`).origin.toLowerCase();
+      } catch {
+        return hostOnly;
+      }
+    }
+    return hostOnly;
   }
 }
 
